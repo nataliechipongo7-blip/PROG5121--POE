@@ -134,13 +134,13 @@ String status = user.returnLoginStatus(isSuccess);
                     
                     System.out.print("Enter message text (max 250 characters): ");
                     String text = scanner.nextLine();
-                    
-                   //Checks if the message is blank or if theirs only spaces    
- if               (text.trim().isEmpty()) {
-                  System.out.println("You cannot send a blank message. Please enter text.");
-                   i--; 
-                  continue;
-    }
+
+                // Keeps asking until the user provides a non-empty text
+               while (text.trim().isEmpty()) {
+                     System.out.println("You cannot send a blank message. Please enter text.");
+                     System.out.print("Enter message text (max 250 characters): ");
+                            text = scanner.nextLine();
+                    }          
                        
                    String lengthCheck = msgHelper.checkMessageLength(text);
 if                   (!lengthCheck.equals("Message ready to send.")) {
