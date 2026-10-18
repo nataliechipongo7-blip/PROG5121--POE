@@ -12,7 +12,7 @@ public class Main {
        
        System.out.println("==================================================");
        System.out.println("            QUICKCHAT REGISTRATION               ");
-       System.out.println("================================================");
+       System.out.println("=================================================");
                
     //Input the user names
     System.out.print("Enter your first name:");
@@ -30,7 +30,7 @@ public class Main {
         scanner.close();
         return;    
  }
-    
+   
   //Input and validate password
   System.out.print("Enter your password:");
   String password = scanner.nextLine();
@@ -78,11 +78,11 @@ String status = user.returnLoginStatus(isSuccess);
      return;
   }
  
- // Part 2: Welcome message and numeric menu loop
+ // Part 2: Welcome message and numeric menu loop 
         System.out.println("\nWelcome to QuickChat.");
 
         boolean keepRunning = true;
-
+         
         while (keepRunning) {
             System.out.println("\n==========================================");
             System.out.println("                 MENU                     ");
@@ -131,10 +131,17 @@ String status = user.returnLoginStatus(isSuccess);
                         i--; // Re-run iteration
                         continue;
                     }
-
+                    
                     System.out.print("Enter message text (max 250 characters): ");
                     String text = scanner.nextLine();
-
+                    
+                   //Checks if the message is blank or if theirs only spaces    
+ if               (text.trim().isEmpty()) {
+                  System.out.println("You cannot send a blank message. Please enter text.");
+                   i--; 
+                  continue;
+    }
+                       
                    String lengthCheck = msgHelper.checkMessageLength(text);
 if                   (!lengthCheck.equals("Message ready to send.")) {
                       System.out.println(lengthCheck);
