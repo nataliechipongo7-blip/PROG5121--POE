@@ -4,6 +4,10 @@ package prog5121.poe;
 import java.util.Scanner;
 
 public class Main {
+      public static String[] recepientArray;
+      public static String[] messageArray;
+      public static String[] idArray;
+      public static String[] messageHash;
    
     public static void main(String[] args){
        Scanner scanner = new Scanner(System.in);
@@ -90,7 +94,8 @@ String status = user.returnLoginStatus(isSuccess);
             System.out.println("1) Send Messages");
             System.out.println("2) Show recently sent messages");
             System.out.println("3) Quit");
-            System.out.print("Choose an option (1-3): ");
+            System.out.println("4) Stored messages"); 
+            System.out.print("Choose an option (1-4): ");
 
             String choiceStr = scanner.nextLine();
 
@@ -104,7 +109,7 @@ String status = user.returnLoginStatus(isSuccess);
             try {
                 choice = Integer.parseInt(choiceStr);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number between 1 and 3.");
+                System.out.println("Please enter a valid number between 1 and 4.");
                 continue;
             }
 
@@ -113,9 +118,10 @@ String status = user.returnLoginStatus(isSuccess);
                 int numMessages = Integer.parseInt(scanner.nextLine());
                 
             // Initialize parallel arrays
-              String[] recipientArray = new String[numMessages];
+              String[] recepientArray = new String[numMessages];
               String[] messageArray = new String[numMessages];
               String[] idArray = new String[numMessages];
+              String[] messageHash = new String[numMessages];
 
                 int totalProcessed = 0;
 
@@ -153,7 +159,7 @@ if                   (!lengthCheck.equals("Message ready to send.")) {
                     String hash = msgHelper.createMessageHash(msgID, i, text);
                     
                     // Store current message into arrays
-                     recipientArray[i] = cell;
+                     recepientArray[i] = cell;
                      messageArray[i] = text;
                      idArray[i] = msgID;
                     
@@ -178,13 +184,24 @@ if                   (!lengthCheck.equals("Message ready to send.")) {
 
             } else if (choice == 2) {
                 System.out.println("Coming Soon.");
-            } else {
-                System.out.println("Please choose a valid option between 1 and 3.");
+                
+            } else if (choice == 4) {
+                if (messageArray == null || messageArray.length == 0){
+                StoredMessagesHandler handler = new StoredMessagesHandler(messageArray, messageHash, idArray, recepientArray);
+                handler.showStoredMessagesMenu(scanner);
+                
+            }else{
+                System.out.println (" Please choose a valid option between 1 and 4.");
+             
             }
         }
         
     }
+ } 
 }
+
+
+
         
         
     
