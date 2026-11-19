@@ -4,10 +4,14 @@ package prog5121.poe;
 import java.util.Scanner;
 
 public class Main {
-      public static String[] recepientArray;
-      public static String[] messageArray;
-      public static String[] idArray;
-      public static String[] messageHash;
+  static String[] recepientArray = new String[100];
+    static String[] messageArray = new String[100];
+    static String[] idArray = new String[100];
+    static String[] messageHash = new String[100];
+    static String[] senderArray = new String[100];
+    static int storedCount = 0;
+    static int totalProcessed = 0;   
+   
    
     public static void main(String[] args){
        Scanner scanner = new Scanner(System.in);
@@ -116,17 +120,21 @@ String status = user.returnLoginStatus(isSuccess);
             if (choice == 1) {
                 System.out.print("How many messages would you like to enter? ");
                 int numMessages = Integer.parseInt(scanner.nextLine());
+          
                 
+     // Part 3:
             // Initialize parallel arrays
-              String[] recepientArray = new String[numMessages];
-              String[] messageArray = new String[numMessages];
-              String[] idArray = new String[numMessages];
-              String[] messageHash = new String[numMessages];
-
-                int totalProcessed = 0;
-
-               
-
+              String[] recepientArray = new String[100];
+              String[] messageArray = new String[100];
+              String[] idArray = new String[100];
+              String[] messageHash = new String[100];
+              String[] senderArray = new String[100];
+              
+              int storedCount = 0;
+             int totalProcessed = 0;
+             
+             
+             
                 for (int i = 0; i < numMessages; i++) {
                     System.out.println("\n--- Entering Message " + (i + 1) + " of " + numMessages + " ---");
 
@@ -158,12 +166,7 @@ if                   (!lengthCheck.equals("Message ready to send.")) {
                     String msgID = msgHelper.generatesMessageID();
                     String hash = msgHelper.createMessageHash(msgID, i, text);
                     
-                    // Store current message into arrays
-                     recepientArray[i] = cell;
-                     messageArray[i] = text;
-                     idArray[i] = msgID;
-                    
-
+                   
                     System.out.println("\nMessage ID generated: " + msgID);
                     System.out.println("Message Hash: " + hash);
 
@@ -176,29 +179,47 @@ if                   (!lengthCheck.equals("Message ready to send.")) {
                     int action = Integer.parseInt(scanner.nextLine());
                     String result = msgHelper.SendMessage(action);
                     System.out.println(result);
+                    
+           
+        //Save the message details only if the user chose Send (1) or Store (3)
+        if (action == 1 || action == 3) {
+            recepientArray[storedCount] = cell;
+            messageArray [storedCount] = text;
+            idArray[storedCount] = msgID;
+            messageHash[storedCount] = hash;
+            senderArray[storedCount] = cellNumber;
+           storedCount++;
+        }
 
-                    totalProcessed++;
-                }
+        // If the message was sent, add it to the sent list and increase the counter
+        if (action == 1) {
+            msgHelper.recordSentMessage(msgID, hash, cell, text);
+        }
+        // If the message was stored, save it to the JSON file
+        else if (action == 3) {
+            msgHelper.storeMessage(msgID, hash, cell, text);
+        }
 
-                System.out.println("\nTotal messages processed: " + totalProcessed);
+        totalProcessed++;
+    } 
+
+                System.out.println("\nTotal messages sent: " + new Message().returnTotalMessages());
 
             } else if (choice == 2) {
-                System.out.println("Coming Soon.");
-                
+                System.out.println( new Message().printMessages());
+         
             } else if (choice == 4) {
-                if (messageArray == null || messageArray.length == 0){
-                StoredMessagesHandler handler = new StoredMessagesHandler(messageArray, messageHash, idArray, recepientArray);
+                
+                StoredMessagesHandler handler = new StoredMessagesHandler(messageArray,messageHash, idArray, recepientArray, senderArray);
                 handler.showStoredMessagesMenu(scanner);
                 
-            }else{
-                System.out.println (" Please choose a valid option between 1 and 4.");
-             
-            }
+            
         }
         
     }
  } 
 }
+
 
 
 
@@ -246,7 +267,6 @@ if                   (!lengthCheck.equals("Message ready to send.")) {
     
     
     
-
 
 
 

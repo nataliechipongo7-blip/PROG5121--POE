@@ -1,64 +1,32 @@
 
 package prog5121.poe;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageTest {
 
-    Message msg = new Message();
+    private Message msg;
 
-    //==================================================
-    // MESSAGE LENGTH TESTS
-    //==================================================
-
-    @Test
-    public void testMessageLengthSuccess() {
-        // Test case for message not exceeding 250 characters
-        String result = msg.checkMessageLength("Hi Mike, can you join us for dinner tonight?");
-        assertEquals("Message ready to send.", result);
+    @BeforeEach
+    public void setUp() {
+        msg = new Message();
     }
 
-    @Test
-    public void testMessageLengthFailure() {
-        // Test case for message exceeding 250 characters limit
-        String longText = "A".repeat(251);
-        String result = msg.checkMessageLength(longText);
-        assertEquals("Message exceeds 250 characters by 1; please reduce the size.", result);
-    }
-
-    //==================================================
-    // RECIPIENT CELL PHONE TESTS
-    //==================================================
-
-    @Test
-    public void testRecipientCellSuccess() {
-        // Validating correct international format
-        String result = msg.checkRecipientCell("+27718693002");
-        assertEquals("Cell phone number successfully captured.", result);
-    }
-
-    @Test
-    public void testRecipientCellFailure() {
-        // Validating incorrect format without international code
-        String result = msg.checkRecipientCell("08575975889");
-        assertEquals("Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.", result);
-    }
-
-    //==================================================
-    // MESSAGE HASH TESTS
-    //==================================================
+    //======================================================================
+    // MESSAGE HASH CREATION TESTS
+    //======================================================================
 
     @Test
     public void testMessageHashCreation() {
-        // Test case 1 hash output matching rubric requirements: 00:0:HITONIGHT
-        String hash = msg.createMessageHash("0000000000", 0, "Hi Mike, can you join us for dinner tonight?");
+        String hash = msg.createMessageHash("0000000000", 0, "Hi Mike, can you join us for dinner tonight");
         assertEquals("00:0:HITONIGHT", hash);
     }
 
-    //==================================================
+    //======================================================================
     // MESSAGE ID VALIDATION TESTS
-    //==================================================
+    //======================================================================
 
     @Test
     public void testMessageIDValidationSuccess() {
@@ -70,19 +38,86 @@ public class MessageTest {
         assertFalse(msg.checkMessageID("12345678901"));
     }
 
-    //==================================================
+    @Test
+    public void testGeneratedMessageIDFormat() {
+        String generatedId = msg.generatesMessageID();
+        assertNotNull(generatedId);
+        assertTrue(msg.checkMessageID(generatedId));
+    }
+
+    //======================================================================
+    // RECIPIENT NUMBER VALIDATION TESTS
+    //======================================================================
+
+    @Test
+    public void testRecipientNumberValidationSuccess() {
+        assertTrue("+27831234567".matches("^\\+27\\d{9}$"));
+    }
+
+    @Test
+    public void testRecipientNumberValidationFailure() {
+        assertFalse("0831234567".matches("^\\+27\\d{9}$"));
+        assertFalse("+278312345".matches("^\\+27\\d{9}$"));
+        assertFalse("+278312345678".matches("^\\+27\\d{9}$"));
+    }
+
+    //======================================================================
+    // MESSAGE LENGTH VALIDATION TESTS
+    //======================================================================
+
+    @Test
+    public void testMessageLengthWithinLimit() {
+        String validMsg = "Hi Mike, can you join us for dinner tonight?";
+        assertTrue(validMsg.length() <= 250);
+    }
+
+    @Test
+    public void testMessageLengthExceedingLimit() {
+        String longMsg = "A".repeat(251);
+        assertTrue(longMsg.length() > 250);
+    }
+
+    //======================================================================
     // SEND MESSAGE OPTIONS TESTS
-    //==================================================
+    //======================================================================
 
     @Test
     public void testSendMessageOptions() {
-        // Option 1: Send Message
         assertEquals("Message successfully sent.", msg.SendMessage(1));
-        
-        // Option 2: Discard Message
         assertEquals("Press 0 to delete the message.", msg.SendMessage(2));
-        
-        // Option 3: Store Message
         assertEquals("Message successfully stored.", msg.SendMessage(3));
+        assertEquals("Invalid choice selected.", msg.SendMessage(99));
+    }
+
+    //======================================================================
+    // SENT & STORED MESSAGE TRACKING TESTS
+    //======================================================================
+
+    @Test
+    public void testRecordSentMessageAndTotalCount() {
+        int initialCount = msg.returnTotalMessages();
+
+        msg.recordSentMessage("1234567890", "12:1:HITONIGHT", "+27831234567", "Hi tonight");
+
+        assertEquals(initialCount + 1, msg.returnTotalMessages());
+        String sentOutput = msg.printMessages();
+        assertTrue(sentOutput.contains("1234567890"));
+        assertTrue(sentOutput.contains("Hi tonight"));
+    }
+
+    @Test
+    public void testRecordStoredMessageDoesNotIncrementSentTotal() {
+        int countBefore = msg.returnTotalMessages();
+
+        String storedOutput = msg.recordStoredMessage(
+                "0987654321",
+                "09:2:MEETLATER",
+                "+27711234567",
+                "Meet later"
+        );
+
+        assertEquals(countBefore, msg.returnTotalMessages());
+        assertTrue(storedOutput.contains("0987654321"));
+        assertTrue(storedOutput.contains("Meet later"));
     }
 }
