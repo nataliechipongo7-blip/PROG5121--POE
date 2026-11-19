@@ -2,9 +2,17 @@ name: Java Maven CI
 
 on:
   push:
-    branches: [ "**" ]  # This tells it to run on ALL branches, including KhanbanTasks
+    branches:
+      - main
+      - khanban
+      - "khanban/**"
+      - "khanban-*"
   pull_request:
-    branches: [ "**" ]
+    branches:
+      - main
+      - khanban
+      - "khanban/**"
+      - "khanban-*"
 
 jobs:
   test:
@@ -14,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
